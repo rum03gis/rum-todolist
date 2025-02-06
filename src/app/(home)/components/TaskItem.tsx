@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { AlertCircle, Pencil, Check, X, Trash } from "lucide-react";
@@ -23,7 +24,7 @@ type Props = {
 };
 
 const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTask }) => {
-  if (!task) return null; // ✅ Fix undefined task issue
+  
 
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
@@ -43,7 +44,7 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
       setIsEditing(false);
     }
   };
-
+  if (!task) return null; 
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
