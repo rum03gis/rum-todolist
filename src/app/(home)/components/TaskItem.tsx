@@ -72,7 +72,7 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
               </span>
               {task.dueDate && (
                 <p className={`text-sm ${isOverdue ? "text-red-500 font-bold" : "text-gray-500 dark:text-gray-400"}`}>
-                  🗓 {format(new Date(task.dueDate), "dd/MM/yyyy")}
+                   {format(new Date(task.dueDate), "dd/MM/yyyy")}
                 </p>
               )}
             </div>
