@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import TaskItem from "./TaskItem";
-import { Progress } from "@/components/ui/progress"; // ShadCN Progress Bar
+import { Progress } from "@/components/ui/progress";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 type Task = {
   id: number;
@@ -24,7 +29,6 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "active">("all");
   const [priorityFilter, setPriorityFilter] = useState<"all" | "High" | "Medium" | "Low">("all");
 
-  // 🔍 Filter tasks based on search, status, and priority
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = task.text.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
@@ -32,76 +36,85 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
       (statusFilter === "completed" && task.completed) ||
       (statusFilter === "active" && !task.completed);
     const matchesPriority = priorityFilter === "all" || task.priority === priorityFilter;
-
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  // 📌 Calculate task statistics and completion percentage
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((task) => task.completed).length;
   const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   return (
-    <div className="space-y-4 p-4 bg-white dark:bg-gray-800 rounded shadow">
-      {/* 📌 Task Progress Statistics */}
+    <Card className="p-6 space-y-6 shadow-lg rounded-2xl bg-white dark:bg-gray-800">
       <div className="text-center">
-        <h2 className="text-lg font-bold">Task Progress</h2>
+        <h2 className="text-xl font-bold">Task Progress</h2>
         <p className="text-gray-600 dark:text-gray-300">
           {completedTasks}/{totalTasks} tasks completed
         </p>
-        <Progress value={completionRate} className="h-2 my-2 bg-gray-300 dark:bg-gray-700" />
+        <Progress value={completionRate} className="h-2 my-2" />
         <p className="text-sm text-gray-500">{completionRate.toFixed(2)}% completed</p>
       </div>
 
-      {/* 🔍 Search Bar */}
-      <input
-        type="text"
+      {/* Search Bar */}
+      <Input
         placeholder="Search tasks..."
-        className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+        className="w-full"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      {/* 📌 Filters */}
-      <div className="flex space-x-2">
-        <select
-          className="p-2 border rounded dark:bg-gray-700 dark:text-white"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as "all" | "completed" | "active")}
-        >
-          <option value="all">All</option>
-          <option value="active">Not Completed</option>
-          <option value="completed">Completed</option>
-        </select>
+      {/* Filters */}
+      <div className="flex space-x-4">
+        <Select onValueChange={(value) => setStatusFilter(value as "all" | "completed" | "active")}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="active">Not Completed</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <select
-          className="p-2 border rounded dark:bg-gray-700 dark:text-white"
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value as "all" | "High" | "Medium" | "Low")}
-        >
-          <option value="all">All Priorities</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
+        <Select onValueChange={(value) => setPriorityFilter(value as "all" | "High" | "Medium" | "Low")}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Priority" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Priorities</SelectItem>
+            <SelectItem value="High">High</SelectItem>
+            <SelectItem value="Medium">Medium</SelectItem>
+            <SelectItem value="Low">Low</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* 📌 Task List */}
-      <ul>
-        {filteredTasks.length > 0 ? (
-          filteredTasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              toggleComplete={toggleComplete}
-              deleteTask={deleteTask}
-              updateTask={updateTask} // 🆕 Pass updateTask function
-            />
-          ))
-        ) : (
-          <p className="text-gray-500 text-center">No tasks available.</p>
-        )}
+      {/* Task List */}
+      <ul className="space-y-2">
+        <AnimatePresence>
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((task) => (
+              <motion.div
+                key={task.id}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                className="p-4 border rounded-xl shadow-md dark:border-gray-700 flex justify-between items-center"
+              >
+                {/* Pass priority to TaskItem to handle displaying it */}
+                <TaskItem
+                  task={task}
+                  toggleComplete={toggleComplete}
+                  deleteTask={deleteTask}
+                  updateTask={updateTask}
+                />
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No tasks available.</p>
+          )}
+        </AnimatePresence>
       </ul>
-    </div>
+    </Card>
   );
 }

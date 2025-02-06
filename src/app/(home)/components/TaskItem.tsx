@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { AlertCircle, Pencil, Check, X } from "lucide-react" // Icons for editing
+import { AlertCircle, Pencil, Check, X, Trash } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
 
 type Task = {
   id: number;
@@ -14,10 +19,12 @@ type Props = {
   task: Task;
   toggleComplete: (id: number) => void;
   deleteTask: (id: number) => void;
-  updateTask: (id: number, newText: string, newDueDate?: string) => void; // 🆕 Added updateTask function
+  updateTask: (id: number, newText: string, newDueDate?: string) => void;
 };
 
 const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTask }) => {
+  if (!task) return null; // ✅ Fix undefined task issue
+
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
   const [newDueDate, setNewDueDate] = useState(task.dueDate || "");
@@ -38,76 +45,65 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
   };
 
   return (
-    <li className="flex items-center justify-between p-3 border rounded-lg mb-2 shadow-md dark:bg-gray-800">
-      <div className="flex items-center space-x-3">
-        {/* Completion checkbox */}
-        <input
-          type="checkbox"
-          checked={task.completed}
-          onChange={() => toggleComplete(task.id)}
-          className="cursor-pointer w-5 h-5"
-        />
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="flex items-center justify-between p-4 rounded-lg shadow-md transition duration-200 hover:shadow-lg bg-white dark:bg-gray-800">
+        <div className="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            checked={task.completed}
+            onChange={() => toggleComplete(task.id)}
+            className="cursor-pointer w-5 h-5"
+          />
 
-        {/* Edit mode */}
-        {isEditing ? (
-          <div className="flex flex-col space-y-2">
-            <input
-              type="text"
-              value={newText}
-              onChange={(e) => setNewText(e.target.value)}
-              className="border rounded px-2 py-1 dark:bg-gray-700"
-            />
-            <input
-              type="date"
-              value={newDueDate}
-              onChange={(e) => setNewDueDate(e.target.value)}
-              className="border rounded px-2 py-1 dark:bg-gray-700"
-            />
-          </div>
-        ) : (
-          <div>
-            <span className={`text-lg ${task.completed ? "line-through text-gray-500" : "text-black dark:text-white"}`}>
-              {task.text}
-            </span>
+          {isEditing ? (
+            <div className="flex flex-col space-y-2">
+              <Input value={newText} onChange={(e) => setNewText(e.target.value)} />
+              <Input type="date" value={newDueDate} onChange={(e) => setNewDueDate(e.target.value)} />
+            </div>
+          ) : (
+            <div>
+              <span className={`text-lg ${task.completed ? "line-through text-gray-500" : "text-black dark:text-white"}`}>
+                {task.text}
+              </span>
+              {task.dueDate && (
+                <p className={`text-sm ${isOverdue ? "text-red-500 font-bold" : "text-gray-500 dark:text-gray-400"}`}>
+                  🗓 {format(new Date(task.dueDate), "dd/MM/yyyy")}
+                </p>
+              )}
+            </div>
+          )}
 
-            {task.dueDate && (
-              <p className={`text-sm ${isOverdue ? "text-red-500 font-bold" : "text-gray-500 dark:text-gray-400"}`}>
-                🗓 {format(new Date(task.dueDate), "dd/MM/yyyy")}
-              </p>
-            )}
-          </div>
-        )}
+          <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>
 
-        {/* Priority level */}
-        <span className={`text-white text-xs px-2 py-1 rounded ${priorityColors[task.priority]}`}>
-          {task.priority}
-        </span>
+          {isOverdue && <AlertCircle className="text-red-500 w-5 h-5" />}
+        </div>
 
-        {/* Overdue warning */}
-        {isOverdue && <AlertCircle className="text-red-500 w-5 h-5" />}
-      </div>
-
-      {/* Actions */}
-      <div className="flex space-x-2">
-        {isEditing ? (
-          <>
-            <button onClick={handleSave} className="text-green-500">
-              <Check />
-            </button>
-            <button onClick={() => setIsEditing(false)} className="text-red-500">
-              <X />
-            </button>
-          </>
-        ) : (
-          <button onClick={() => setIsEditing(true)} className="text-blue-500">
-            <Pencil />
-          </button>
-        )}
-        <button onClick={() => deleteTask(task.id)} className="text-red-500 hover:underline text-sm">
-          Delete
-        </button>
-      </div>
-    </li>
+        <div className="flex space-x-2">
+          {isEditing ? (
+            <>
+              <Button size="sm" variant="outline" onClick={handleSave}>
+                <Check className="w-4 h-4" />
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
+              <Pencil className="w-4 h-4" />
+            </Button>
+          )}
+          <Button size="sm" variant="destructive" onClick={() => deleteTask(task.id)}>
+            <Trash className="w-4 h-4" />
+          </Button>
+        </div>
+      </Card>
+    </motion.div>
   );
 };
 
