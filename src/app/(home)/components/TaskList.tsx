@@ -8,6 +8,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import ThemeSwitch from "./ui/theme-switch";
+import { useTheme } from "../context/theme-context";
 
 type Task = {
   id: number;
@@ -45,14 +47,15 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
 
   return (
     <Card className="p-6 space-y-6 shadow-lg rounded-2xl bg-white dark:bg-gray-800">
-      <div className="text-center">
+      <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Task Progress</h2>
-        <p className="text-gray-600 dark:text-gray-300">
-          {completedTasks}/{totalTasks} tasks completed
-        </p>
-        <Progress value={completionRate} className="h-2 my-2" />
-        <p className="text-sm text-gray-500">{completionRate.toFixed(2)}% completed</p>
+        <ThemeSwitch />
       </div>
+      <p className="text-gray-600 dark:text-gray-300 text-center">
+        {completedTasks}/{totalTasks} tasks completed
+      </p>
+      <Progress value={completionRate} className="h-2 my-2" />
+      <p className="text-sm text-gray-500 text-center">{completionRate.toFixed(2)}% completed</p>
 
       {/* Search Bar */}
       <Input
@@ -75,7 +78,7 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
           </SelectContent>
         </Select>
 
-        <Select onValueChange={(value) => setPriorityFilter(value as "all" | "High" | "Medium" | "Low")}>
+        <Select onValueChange={(value) => setPriorityFilter(value as "all" | "High" | "Medium" | "Low")}>          
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
@@ -101,7 +104,6 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
                 transition={{ duration: 0.3 }}
                 className="p-4 border rounded-xl shadow-md dark:border-gray-700 flex justify-between items-center"
               >
-                {/* Pass priority to TaskItem to handle displaying it */}
                 <TaskItem
                   task={task}
                   toggleComplete={toggleComplete}

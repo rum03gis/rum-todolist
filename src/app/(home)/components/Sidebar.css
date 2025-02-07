@@ -1,0 +1,90 @@
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for background and color */
+}
+
+/* Light theme styles */
+.sidebar.light {
+    background-color: #ffffff; /* Light background */
+    color: #333; /* Light text color */
+}
+
+.sidebar.light .sidebar-menu li {
+    transition: background-color 0.3s, color 0.3s; /* Transition for hover effects */
+}
+
+.sidebar.light .sidebar-menu li:hover {
+    background-color: #f0f0f0; /* Light hover effect */
+    color: #007BFF; /* Change text color on hover */
+}
+
+.sidebar.light .sidebar-menu li a {
+    color: inherit; /* Inherit color from parent li */
+    text-decoration: none; /* Remove underline */
+    display: block; /* Make the anchor fill the list item */
+    padding: 15px 20px; /* Padding inside the list item */
+}
+
+/* Dark theme styles */
+.sidebar.dark {
+    background-color: #1c1c1c; /* Dark background */
+    color: #ffffff; /* Dark text color */
+}
+
+.sidebar.dark .sidebar-menu li {
+    transition: background-color 0.3s, color 0.3s; /* Transition for hover effects */
+}
+
+.sidebar.dark .sidebar-menu li:hover {
+    background-color: #444; /* Darker hover effect */
+    color: #4CAF50; /* Change text color on hover */
+}
+
+.sidebar.dark .sidebar-menu li a {
+    color: inherit; /* Inherit color from parent li */
+    text-decoration: none; /* Remove underline */
+    display: block; /* Make the anchor fill the list item */
+    padding: 15px 20px; /* Padding inside the list item */
+}
+
+/* Other styles remain unchanged */
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #444; /* Adjust border for better visibility in dark mode */
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.sidebar-header p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #bbb; /* Adjust header text color for better visibility in dark mode */
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.badge {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: #bbb; /* Adjust footer text color for better visibility in dark mode */
+}
