@@ -1,14 +1,19 @@
 "use client";
 
-import { ThemeProvider } from "./context/theme-context"; // Đường dẫn tương đối từ layout.tsx
-import { SidebarProvider } from "./context/sidebar-context"; // Đường dẫn tương đối từ layout.tsx
+import { ThemeProvider } from "./context/theme-context";
+import { SidebarProvider } from "./context/sidebar-context";
+import { Toaster } from "sonner";
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import CSS của react-confirm-alert
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <SidebarProvider>
         <html lang="en">
-          <body>{children}</body>
+          <body>
+            <Toaster position="top-right" richColors />
+            {children}
+          </body>
         </html>
       </SidebarProvider>
     </ThemeProvider>

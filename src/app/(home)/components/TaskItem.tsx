@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { AlertCircle, Pencil, Check, X, Trash } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -7,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 
 type Task = {
   id: number;
@@ -24,11 +27,10 @@ type Props = {
 };
 
 const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTask }) => {
-  
-
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
   const [newDueDate, setNewDueDate] = useState(task.dueDate || "");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const priorityColors = {
     High: "bg-red-500",
@@ -38,13 +40,31 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
 
   const isOverdue = task.dueDate ? new Date(task.dueDate) < new Date() && !task.completed : false;
 
+  useEffect(() => {
+    if (isOverdue) {
+      toast.warning(`Task "${task.text}" is overdue!`, { duration: 5000 });
+    }
+  }, [isOverdue, task.text]);
+
   const handleSave = () => {
     if (newText.trim()) {
       updateTask(task.id, newText, newDueDate);
       setIsEditing(false);
+      toast.success("Task updated successfully");
+    } else {
+      toast.error("Task content cannot be empty!");
     }
   };
-  if (!task) return null; 
+
+  const handleComplete = () => {
+    toggleComplete(task.id);
+    if (task.priority === "High" && !task.completed) {
+      toast.warning("You completed a high-priority task!");
+    }
+  };
+
+  if (!task) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -57,7 +77,7 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
           <input
             type="checkbox"
             checked={task.completed}
-            onChange={() => toggleComplete(task.id)}
+            onChange={handleComplete}
             className="cursor-pointer w-5 h-5"
           />
 
@@ -73,7 +93,7 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
               </span>
               {task.dueDate && (
                 <p className={`text-sm ${isOverdue ? "text-red-500 font-bold" : "text-gray-500 dark:text-gray-400"}`}>
-                   {format(new Date(task.dueDate), "dd/MM/yyyy")}
+                  {format(new Date(task.dueDate), "dd/MM/yyyy")}
                 </p>
               )}
             </div>
@@ -99,9 +119,31 @@ const TaskItem: React.FC<Props> = ({ task, toggleComplete, deleteTask, updateTas
               <Pencil className="w-4 h-4" />
             </Button>
           )}
-          <Button size="sm" variant="destructive" onClick={() => deleteTask(task.id)}>
-            <Trash className="w-4 h-4" />
-          </Button>
+
+          {/* Delete Dialog */}
+          <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="destructive" onClick={() => setShowDeleteDialog(true)}>
+                <Trash className="w-4 h-4" />
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogTitle>Confirm Deletion</DialogTitle>
+              <p>Are you sure you want to delete this task?</p>
+              <DialogFooter>
+                <Button variant="destructive" onClick={() => {
+                  deleteTask(task.id);
+                  setShowDeleteDialog(false); 
+                  toast.success("Task deleted successfully");
+                }}>
+                  Yes
+                </Button>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
         </div>
       </Card>
     </motion.div>

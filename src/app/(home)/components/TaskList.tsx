@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TaskItem from "./TaskItem";
 import { Progress } from "@/components/ui/progress";
@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import ThemeSwitch from "./ui/theme-switch";
 import { useTheme } from "../context/theme-context";
+import { toast } from "sonner";
+import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+
 
 type Task = {
   id: number;
@@ -30,6 +33,15 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "active">("all");
   const [priorityFilter, setPriorityFilter] = useState<"all" | "High" | "Medium" | "Low">("all");
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+
+  useEffect(() => {
+    const overdueTasks = tasks.filter((task) => task.dueDate && new Date(task.dueDate) < new Date() && !task.completed);
+    if (overdueTasks.length > 0) {
+      toast("You have overdue tasks!", { duration: 5000 });
+    }
+  }, [tasks]);
 
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = task.text.toLowerCase().includes(searchTerm.toLowerCase());
@@ -107,7 +119,7 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
                 <TaskItem
                   task={task}
                   toggleComplete={toggleComplete}
-                  deleteTask={deleteTask}
+                  deleteTask={() => setConfirmDelete(task.id)}
                   updateTask={updateTask}
                 />
               </motion.div>
@@ -117,6 +129,26 @@ export default function TaskList({ tasks, toggleComplete, deleteTask, updateTask
           )}
         </AnimatePresence>
       </ul>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={confirmDelete !== null} onOpenChange={(isOpen) => {
+        if (!isOpen) setConfirmDelete(null);
+      }}>
+        <DialogContent>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <p>Are you sure you want to delete this task?</p>
+          <DialogFooter>
+            <Button variant="destructive" onClick={() => {
+              if (confirmDelete !== null) {
+                deleteTask(confirmDelete);
+                setConfirmDelete(null); 
+                toast.success("Task deleted successfully");
+              }
+            }}>Yes</Button>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
