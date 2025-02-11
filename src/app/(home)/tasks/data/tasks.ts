@@ -1,0 +1,9 @@
+export const tasks = [
+  {
+    id: 'TASK-8782',
+    title:
+      "You can't compress the program without quantifying the open-source SSD pixel!",
+    status: 'in progress',
+    label: 'documentation',
+    priority: 'medium',
+  },]
