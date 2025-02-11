@@ -1,7 +1,7 @@
 "use client";
 
-import { ThemeProvider } from "./context/theme-context";
-import { SidebarProvider } from "./context/sidebar-context";
+import { ThemeProvider } from "../../context/theme-context";
+import { SidebarProvider } from "../../context/sidebar-context";
 import { Toaster } from "sonner";
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import CSS của react-confirm-alert
 
