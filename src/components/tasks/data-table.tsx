@@ -65,9 +65,10 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className='space-y-4'>
+    <div className='container mx-auto p-6 space-y-6'>
+      <div className='text-center text-2xl font-semibold mb-4'>Your Tasks</div>
       <DataTableToolbar table={table} />
-      <div className='rounded-md border'>
+      <div className='rounded-lg border shadow-sm p-4'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
