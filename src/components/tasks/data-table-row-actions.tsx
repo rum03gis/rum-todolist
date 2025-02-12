@@ -29,7 +29,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const task = taskSchema.parse(row.original)
 
-  const { setOpen, setCurrentRow } = useTasks()
+  const { setOpen, setCurrentRow,onChangeTask } = useTasks()
 
   return (
     <DropdownMenu modal={false}>
@@ -59,7 +59,10 @@ export function DataTableRowActions<TData>({
           <DropdownMenuSubContent>
             <DropdownMenuRadioGroup value={task.label}>
               {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
+                <DropdownMenuRadioItem onClick={() => {
+                  const res = { ...task, label: label.value }
+                  onChangeTask(res,true)
+                }} key={label.value} value={label.value}>
                   {label.label}
                 </DropdownMenuRadioItem>
               ))}
