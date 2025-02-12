@@ -1,68 +1,67 @@
 "use client";
 
-
-import { useTasks } from '../../context/tasks-context';
-import { ITask } from '../../data/tasks';
-import { ConfirmDialog } from './confirm-dialog';
-
-import { TasksMutateDrawer } from './tasks-mutate-drawer';
-import { toast } from '@/hooks/use-toast';
-
+import { useTasks } from "../../context/tasks-context";
+import { ITask } from "../../data/tasks";
+import { ConfirmDialog } from "./confirm-dialog";
+import { TasksMutateDrawer } from "./tasks-mutate-drawer";
+import { toast } from "@/hooks/use-toast";
+import { v4 as uuidv4 } from "uuid";
 
 export function TasksDialogs({
   onChangeTask,
   deleteTask,
 }: {
-  onChangeTask: (e: ITask, isUpdate: boolean) => void;
-  deleteTask: (e: ITask) => void;
+  onChangeTask: (task: ITask, isUpdate: boolean) => void;
+  deleteTask: (task: ITask) => void;
 }) {
   const { open, setOpen, currentRow, setCurrentRow } = useTasks();
+
   return (
     <>
+      {}
       <TasksMutateDrawer
         key="task-create"
         open={open === "create"}
-        onOpenChange={() => setOpen("create")}
-        onChangeTask={onChangeTask}
+        onOpenChange={() => {
+          setOpen(null);
+          setCurrentRow(null); 
+        }}
+        onChangeTask={(task) => {
+          const newTask = { ...task, id: uuidv4() };
+          onChangeTask(newTask, false);
+        }}
       />
 
       
-
       {currentRow && (
         <>
+          
           <TasksMutateDrawer
             key={`task-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={() => {
-              setOpen("update");
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
+              setOpen(null);
+              setTimeout(() => setCurrentRow(null), 500);
             }}
             currentRow={currentRow}
-            onChangeTask={onChangeTask}
+            onChangeTask={(task) => {
+              const updatedTask = { ...currentRow, ...task }; 
+              onChangeTask(updatedTask, true);
+            }}
           />
 
+         
           <ConfirmDialog
             key="task-delete"
             destructive
             open={open === "delete"}
-            onOpenChange={() => {
-              setOpen("delete");
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
-            }}
+            onOpenChange={() => setOpen(null)}
             handleConfirm={() => {
+              deleteTask(currentRow);
               setOpen(null);
-              console.log("currentRow", currentRow);
-
-              deleteTask(currentRow as any);
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
+              setCurrentRow(null);
               toast({
-                title: "The following task has been deleted:",
+                title: "Task Deleted",
                 description: (
                   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
                     <code className="text-white">
@@ -73,11 +72,10 @@ export function TasksDialogs({
               });
             }}
             className="max-w-md"
-            title={`Delete this task: ${currentRow.id} ?`}
+            title="Delete this task?"
             desc={
               <>
-                You are about to delete a task with the ID{" "}
-                <strong>{currentRow.id}</strong>. <br />
+                You are about to delete this task. <br />
                 This action cannot be undone.
               </>
             }

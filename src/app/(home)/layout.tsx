@@ -3,8 +3,7 @@
 import { ThemeProvider } from "../../context/theme-context";
 import { SidebarProvider } from "../../context/sidebar-context";
 import { Toaster } from "sonner";
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import CSS của react-confirm-alert
-
+import "react-confirm-alert/src/react-confirm-alert.css"; 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>

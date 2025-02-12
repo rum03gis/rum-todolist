@@ -12,12 +12,12 @@ import { useState } from "react";
 export default function Tasks() {
   const [tasksData, setTasksData] = useState<ITask[]>([]);
 
-  const onChangeTask = (task: ITask, isUpdate: boolean) => {
-    if (isUpdate) {
+  const onChangeTask = (task: Omit<ITask, "id"> & { id?: string }, isUpdate: boolean) => {
+    if (isUpdate && task.id) {
       const res = tasksData.filter((e) => e.id === task.id);
-      setTasksData([...res, task]);
+      setTasksData([...res, task as ITask]);
     } else {
-      setTasksData([...tasksData, task]);
+      setTasksData([...tasksData, task as ITask]);
     }
   };
 
