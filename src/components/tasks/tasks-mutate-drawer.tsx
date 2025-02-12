@@ -65,7 +65,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow, onChangeTask
 
     onChangeTask(newTask, isUpdate);
     onOpenChange(false);
-
+    form.reset();
     toast({
       title: isUpdate ? "Task Updated" : "Task Created",
       description: (

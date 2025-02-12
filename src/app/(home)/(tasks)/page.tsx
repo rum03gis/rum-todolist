@@ -14,7 +14,7 @@ export default function Tasks() {
 
   const onChangeTask = (task: Omit<ITask, "id"> & { id?: string }, isUpdate: boolean) => {
     if (isUpdate && task.id) {
-      const res = tasksData.filter((e) => e.id === task.id);
+      const res = tasksData.filter((e) => e.id !== task.id);
       setTasksData([...res, task as ITask]);
     } else {
       setTasksData([...tasksData, task as ITask]);
