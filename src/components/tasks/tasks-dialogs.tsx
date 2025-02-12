@@ -7,14 +7,8 @@ import { TasksMutateDrawer } from "./tasks-mutate-drawer";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 
-export function TasksDialogs({
-  onChangeTask,
-  deleteTask,
-}: {
-  onChangeTask: (task: ITask, isUpdate: boolean) => void;
-  deleteTask: (task: ITask) => void;
-}) {
-  const { open, setOpen, currentRow, setCurrentRow } = useTasks();
+export function TasksDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow,onChangeTask,deleteTask } = useTasks();
 
   return (
     <>

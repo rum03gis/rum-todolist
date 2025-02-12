@@ -1,33 +1,17 @@
-
 "use client";
 
 import { columns } from "../../../components/tasks/columns";
 import { DataTable } from "../../../components/tasks/data-table";
 import { TasksDialogs } from "../../../components/tasks/tasks-dialogs";
 import { TasksPrimaryButtons } from "../../../components/tasks/tasks-primary-buttons";
-import TasksProvider from "../../../context/tasks-context";
-import { ITask } from "../../../data/tasks";
-import { useState } from "react";
+import TasksProvider, { useTasks } from "../../../context/tasks-context";
+
 
 export default function Tasks() {
-  const [tasksData, setTasksData] = useState<ITask[]>([]);
-
-  const onChangeTask = (task: Omit<ITask, "id"> & { id?: string }, isUpdate: boolean) => {
-    if (isUpdate && task.id) {
-      const res = tasksData.filter((e) => e.id !== task.id);
-      setTasksData([...res, task as ITask]);
-    } else {
-      setTasksData([...tasksData, task as ITask]);
-    }
-  };
-
-  const deleteTask = (task: ITask) => {
-    const tasks = tasksData.filter((e) => e.id !== task.id);
-    setTasksData(tasks);
-  };
+ const { tasksData } = useTasks();
 
   return (
-    <TasksProvider>
+    <>
       <>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 space-y-2 p-4">
           <div>
@@ -43,7 +27,7 @@ export default function Tasks() {
         </div>
       </>
 
-      <TasksDialogs onChangeTask={onChangeTask} deleteTask={deleteTask} />
-    </TasksProvider>
+      <TasksDialogs />
+    </>
   );
 }
